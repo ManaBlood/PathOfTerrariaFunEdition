@@ -164,7 +164,21 @@ internal class PlayerStatInnerPanel : SmartUiElement
 		// Offense  
 		list.Add(new PlayerStatUI(Localize("OffenseHeader"), player => "", isHeader: true));
 		list.Add(new PlayerStatUI(Localize("CriticalChance"), player => $"{player.GetTotalCritChance(DamageClass.Generic):#0.##}%"));
-		
+		list.Add(new PlayerStatUI(Localize("CriticalMultiplier"), player =>
+		{
+			UniversalBuffingPlayer buffingPlayer = player.GetModPlayer<UniversalBuffingPlayer>();
+			float critMultiplier = buffingPlayer.UniversalModifier.CriticalMultiplier.Base;
+			return $"{critMultiplier:#0.##}%";
+		}));
+		list.Add(new PlayerStatUI(Localize("ProjectileSpeed"), player => 
+		{
+			var modifier = player.GetModPlayer<ProjectileModifierPlayer>().ProjectileSpeedMultiplier;
+			var totalMultiplier = modifier.ApplyTo(1f);
+			var percentageBonus = (totalMultiplier - 1f) * 100f;
+			return $"{percentageBonus:#0.##}%";
+		}));
+		list.Add(new PlayerStatUI(Localize("ProjectileCount"), player => $"{player.GetModPlayer<ProjectileModifierPlayer>().ProjectileCountModifier.ApplyTo(0f):#0.##}"));
+
 		// Attributes
 		list.Add(new PlayerStatUI(Localize("AttributesHeader"), player => "", isHeader: true));
 		list.Add(new PlayerStatUI(Localize("Strength"), player => $"{player.GetModPlayer<AttributesPlayer>().Strength:#0.##}", hover: GetHelp("Strength")));
@@ -176,10 +190,15 @@ internal class PlayerStatInnerPanel : SmartUiElement
 		list.Add(new PlayerStatUI(Localize("HasteChargeChance"), player => $"{player.GetModPlayer<HasteChargePlayer>().ChargeGainChance:#0.##}%"));
 		list.Add(new PlayerStatUI(Localize("FocusChargeChance"), player => $"{player.GetModPlayer<FocusChargePlayer>().ChargeGainChance:#0.##}%"));
 		list.Add(new PlayerStatUI(Localize("AegisChargeChance"), player => $"{player.GetModPlayer<AegisChargePlayer>().ChargeGainChance:#0.##}%"));
+		list.Add(new PlayerStatUI(Localize("MaxHasteCharges"), player => $"{player.GetModPlayer<HasteChargePlayer>().MaxCharges:#0.##}"));
+		list.Add(new PlayerStatUI(Localize("MaxFocusCharges"), player => $"{player.GetModPlayer<FocusChargePlayer>().MaxCharges:#0.##}"));
+		list.Add(new PlayerStatUI(Localize("MaxAegisCharges"), player => $"{player.GetModPlayer<AegisChargePlayer>().MaxCharges:#0.##}"));
 		
 		// Misc
 		list.Add(new PlayerStatUI(Localize("MiscHeader"), player => "", isHeader: true));
 		list.Add(new PlayerStatUI(Localize("MaxMinions"), player => $"{player.maxMinions.ToString()}"));
+		list.Add(new PlayerStatUI(Localize("AmmoConsumptionChance"), player => $"{player.GetModPlayer<AmmoConsumptionPlayer>().AmmoSaveChance * 100:#0.##}%"));
+
 		list.Add(new PlayerStatUI(Localize("HealthPotions"), player =>
 		{
 			PotionPlayer potionPlayer = Main.LocalPlayer.GetModPlayer<PotionPlayer>();
